@@ -1,16 +1,51 @@
 import React from 'react';
 
-import { Box, Button, Divider, Drawer, Link, Stack, Typography } from '@mui/material';
+import { Box, Drawer, Stack, Typography } from '@mui/material';
 
-import { useSamplesDrawerOpen } from '../../documents/editor/EditorContext';
+import {
+  setDocument,
+  setSelectedBlockId,
+  useDocument,
+  useSamplesDrawerOpen,
+} from '../../documents/editor/EditorContext';
+import { BUTTONS } from '../../documents/blocks/helpers/EditorChildrenIds/AddBlockMenu/buttons';
+import { TEditorBlock } from '../../documents/editor/core';
 
-import SidebarButton from './SidebarButton';
-import logo from './waypoint.svg';
+import logo from './logo.png';
 
 export const SAMPLES_DRAWER_WIDTH = 240;
 
+function generateId() {
+  return `block-${Date.now()}`;
+}
+
 export default function SamplesDrawer() {
   const samplesDrawerOpen = useSamplesDrawerOpen();
+  const document = useDocument();
+
+  const handleAddBlock = (block: TEditorBlock) => {
+    const blockId = generateId();
+    const rootBlock = document['root'];
+
+    // Safety check - make sure root exists and has childrenIds
+    if (!rootBlock || rootBlock.type !== 'EmailLayout') {
+      return;
+    }
+
+    const currentChildrenIds = rootBlock.data.childrenIds || [];
+
+    setDocument({
+      [blockId]: block,
+      root: {
+        ...rootBlock,
+        data: {
+          ...rootBlock.data,
+          childrenIds: [...currentChildrenIds, blockId],
+        },
+      },
+    });
+    setSelectedBlockId(blockId);
+  };
 
   return (
     <Drawer
@@ -21,59 +56,101 @@ export default function SamplesDrawer() {
         width: samplesDrawerOpen ? SAMPLES_DRAWER_WIDTH : 0,
       }}
     >
-      <Stack spacing={3} py={1} px={2} width={SAMPLES_DRAWER_WIDTH} justifyContent="space-between" height="100%">
-        <Stack spacing={2} sx={{ '& .MuiButtonBase-root': { width: '100%', justifyContent: 'flex-start' } }}>
-          <Typography variant="h6" component="h1" sx={{ p: 0.75 }}>
-            EmailBuilder.js
-          </Typography>
-
-          <Stack alignItems="flex-start">
-            <SidebarButton href="#">Empty</SidebarButton>
-            <SidebarButton href="#sample/welcome">Welcome email</SidebarButton>
-            <SidebarButton href="#sample/one-time-password">One-time passcode (OTP)</SidebarButton>
-            <SidebarButton href="#sample/reset-password">Reset password</SidebarButton>
-            <SidebarButton href="#sample/order-ecomerce">E-commerce receipt</SidebarButton>
-            <SidebarButton href="#sample/subscription-receipt">Subscription receipt</SidebarButton>
-            <SidebarButton href="#sample/reservation-reminder">Reservation reminder</SidebarButton>
-            <SidebarButton href="#sample/post-metrics-report">Post metrics</SidebarButton>
-            <SidebarButton href="#sample/respond-to-message">Respond to inquiry</SidebarButton>
-          </Stack>
-
-          <Divider />
-
-          <Stack>
-            <Button size="small" href="https://www.usewaypoint.com/open-source/emailbuilderjs" target="_blank">
-              Learn more
-            </Button>
-            <Button size="small" href="https://github.com/usewaypoint/email-builder-js" target="_blank">
-              View on GitHub
-            </Button>
-          </Stack>
-        </Stack>
-        <Stack spacing={2} px={0.75} py={3}>
-          <Link href="https://usewaypoint.com?utm_source=emailbuilderjs" target="_blank" sx={{ lineHeight: 1 }}>
-            <Box component="img" src={logo} width={32} />
-          </Link>
-          <Box>
-            <Typography variant="overline" gutterBottom>
-              Looking to send emails?
+      <Stack spacing={3} py={2} px={2} width={SAMPLES_DRAWER_WIDTH} height="100%">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            mb: 2,
+            textDecoration: 'none',
+            color: 'inherit',
+          }}
+          component="a"
+          href="/"
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              borderRadius: 1,
+              overflow: 'hidden',
+              flexShrink: 0,
+            }}
+          >
+            <Box component="img" src={logo} alt="PointerUp" sx={{ width: 32, height: 32 }} />
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: 600, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+            >
+              PointerUp
             </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Waypoint is an end-to-end email API with a &apos;pro&apos; version of this template builder with dynamic
-              variables, loops, conditionals, drag and drop, layouts, and more.
+            <Typography
+              variant="caption"
+              sx={{ lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+            >
+              Grow
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ justifyContent: 'center' }}
-            href="https://usewaypoint.com?utm_source=emailbuilderjs"
-            target="_blank"
+        </Box>
+
+        <Stack spacing={2}>
+          <Typography variant="overline" color="text.secondary">
+            CONTENT BLOCKS
+          </Typography>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 2,
+            }}
           >
-            Learn more
-          </Button>
+            {BUTTONS.map((button, index) => (
+              <Box
+                key={index}
+                component="button"
+                onClick={() => handleAddBlock(button.block())}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1,
+                  p: 2,
+                  height: 84,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  backgroundColor: 'background.paper',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  color: 'text.secondary',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    backgroundColor: 'primary.50', // light primary background on hover
+                    color: 'primary.main',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                  },
+                }}
+              >
+                {React.cloneElement(button.icon as React.ReactElement, {
+                  fontSize: 'medium',
+                })}
+                <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                  {button.label}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
         </Stack>
       </Stack>
     </Drawer>
   );
 }
+

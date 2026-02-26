@@ -11,15 +11,8 @@ import {
   useSelectedMainTab,
   useSelectedScreenSize,
 } from '../../documents/editor/EditorContext';
-import ToggleInspectorPanelButton from '../InspectorDrawer/ToggleInspectorPanelButton';
-import ToggleSamplesPanelButton from '../SamplesDrawer/ToggleSamplesPanelButton';
 
-import DownloadJson from './DownloadJson';
-import HtmlPanel from './HtmlPanel';
-import ImportJson from './ImportJson';
-import JsonPanel from './JsonPanel';
 import MainTabsGroup from './MainTabsGroup';
-import ShareButton from './ShareButton';
 
 export default function TemplatePanel() {
   const document = useDocument();
@@ -65,10 +58,8 @@ export default function TemplatePanel() {
             <Reader document={document} rootBlockId="root" />
           </Box>
         );
-      case 'html':
-        return <HtmlPanel />;
-      case 'json':
-        return <JsonPanel />;
+      default:
+        return null;
     }
   };
 
@@ -89,14 +80,11 @@ export default function TemplatePanel() {
         justifyContent="space-between"
         alignItems="center"
       >
-        <ToggleSamplesPanelButton />
         <Stack px={2} direction="row" gap={2} width="100%" justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={2}>
             <MainTabsGroup />
           </Stack>
           <Stack direction="row" spacing={2}>
-            <DownloadJson />
-            <ImportJson />
             <ToggleButtonGroup value={selectedScreenSize} exclusive size="small" onChange={handleScreenSizeChange}>
               <ToggleButton value="desktop">
                 <Tooltip title="Desktop view">
@@ -109,10 +97,8 @@ export default function TemplatePanel() {
                 </Tooltip>
               </ToggleButton>
             </ToggleButtonGroup>
-            <ShareButton />
           </Stack>
         </Stack>
-        <ToggleInspectorPanelButton />
       </Stack>
       <Box sx={{ height: 'calc(100vh - 49px)', overflow: 'auto', minWidth: 370 }}>{renderMainPanel()}</Box>
     </>

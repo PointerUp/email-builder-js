@@ -8,16 +8,33 @@ type BlockMenuButtonProps = {
   onClick: () => void;
 };
 
-const BUTTON_SX: SxProps = { p: 1.5, display: 'flex', flexDirection: 'column' };
+const BUTTON_SX: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  p: 2,
+  width: 90,
+  height: 90,
+  border: '1px solid',
+  borderColor: 'grey.300',
+  borderRadius: 2,
+  backgroundColor: 'background.paper',
+  color: 'text.secondary',
+  textTransform: 'none',
+  transition: 'all 0.2s',
+  '&:hover': {
+    borderColor: 'primary.main',
+    backgroundColor: 'primary.50',
+    color: 'primary.main',
+  },
+};
+
 const ICON_SX: SxProps = {
-  mb: 0.75,
-  width: '100%',
-  bgcolor: 'cadet.200',
+  mb: 1,
   display: 'flex',
   justifyContent: 'center',
-  p: 1,
-  border: '1px solid',
-  borderColor: 'cadet.300',
+  color: 'inherit',
 };
 
 export default function BlockTypeButton({ label, icon, onClick }: BlockMenuButtonProps) {

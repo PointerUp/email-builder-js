@@ -19,7 +19,8 @@ export default function TextInput({ helperText, label, placeholder, rows, InputP
       fullWidth
       multiline={isMultiline}
       minRows={rows}
-      variant={isMultiline ? 'outlined' : 'standard'}
+      variant="outlined"
+      size="small"
       label={label}
       placeholder={placeholder}
       helperText={helperText}

@@ -18,7 +18,7 @@ export default function TextDimensionInput({ label, defaultValue, onChange }: Te
       onChange={handleChange}
       defaultValue={defaultValue}
       label={label}
-      variant="standard"
+      variant="outlined"
       placeholder="auto"
       size="small"
       InputProps={{
