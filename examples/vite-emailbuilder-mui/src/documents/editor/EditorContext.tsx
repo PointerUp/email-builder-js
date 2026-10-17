@@ -31,6 +31,10 @@ export function useDocument() {
   return editorStateStore((s) => s.document);
 }
 
+export function getDocument() {
+  return editorStateStore.getState().document;
+}
+
 export function useSelectedBlockId() {
   return editorStateStore((s) => s.selectedBlockId);
 }

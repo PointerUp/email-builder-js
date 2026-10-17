@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { MonitorOutlined, PhoneIphoneOutlined } from '@mui/icons-material';
 import { Box, Stack, SxProps, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
-import { Reader } from '@usewaypoint/email-builder';
+import { Reader, renderToStaticMarkup } from '@usewaypoint/email-builder';
 
 import EditorBlock from '../../documents/editor/EditorBlock';
 import {
+  getDocument,
+  resetDocument,
   setSelectedScreenSize,
   useDocument,
   useSelectedMainTab,
@@ -44,6 +46,35 @@ export default function TemplatePanel() {
     }
   };
 
+  const handleSaveAndExit = () => {
+    const currentDoc = getDocument();
+    const html = renderToStaticMarkup(currentDoc, { rootBlockId: 'root' });
+    const targetOrigin = import.meta.env.VITE_GROW_APP_URL || '*';
+    window.parent?.postMessage(
+      {
+        type: 'SAVE_EMAIL_TEMPLATE',
+        document: currentDoc,
+        html,
+      },
+      targetOrigin
+    );
+  };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'LOAD_EMAIL_TEMPLATE' && event.data.document) {
+        resetDocument(event.data.document);
+      }
+      if (event.data?.type === 'REQUEST_SAVE') {
+        handleSaveAndExit();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    const targetOrigin = import.meta.env.VITE_GROW_APP_URL || '*';
+    window.parent?.postMessage({ type: 'EMAIL_BUILDER_READY' }, targetOrigin);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const renderMainPanel = () => {
     switch (selectedMainTab) {
       case 'editor':
@@ -81,10 +112,10 @@ export default function TemplatePanel() {
         alignItems="center"
       >
         <Stack px={2} direction="row" gap={2} width="100%" justifyContent="space-between" alignItems="center">
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} alignItems="center">
             <MainTabsGroup />
           </Stack>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} alignItems="center">
             <ToggleButtonGroup value={selectedScreenSize} exclusive size="small" onChange={handleScreenSizeChange}>
               <ToggleButton value="desktop">
                 <Tooltip title="Desktop view">
