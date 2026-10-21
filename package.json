@@ -22,8 +22,7 @@
     "examples/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w examples/vite-emailbuilder-mui",
-    "build": "npm run --workspaces --if-present build",
+    "build": "npx tsc",
     "test": "npx jest",
     "start": "npx serve -l $PORT -s examples/vite-emailbuilder-mui/dist/"
   },
